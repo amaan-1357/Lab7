@@ -23,6 +23,10 @@ public class Books {
         this.available = available;
     }
 
+    public Books() {
+
+    }
+
     public Integer getId() {
         return id;
     }

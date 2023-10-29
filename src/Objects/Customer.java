@@ -16,6 +16,10 @@ public class Customer {
         this.name = name;
     }
 
+    public Customer() {
+
+    }
+
     public Integer getId() {
         return id;
     }
