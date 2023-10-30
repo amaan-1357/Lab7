@@ -1,21 +1,25 @@
 package GUI;
 
+import Objects.Books;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class AddBookView extends JFrame {
     private JLabel name = new JLabel("Name: ");
     private JTextField book = new JTextField(15);
     private JLabel des = new JLabel("Description: ");
-    private JTextArea description = new JTextArea("vdwfdsf",3,15);
+    private JTextArea description = new JTextArea(3,15);
     private JLabel quan = new JLabel("Quantity: ");
     private JTextField quantity = new JTextField(15);
     private JButton addButton = new JButton("Add");
     private SpringLayout layout = new SpringLayout();
 
     public AddBookView(){
-        setTitle("Add Customer");
+        setTitle("Add Book");
         setLayout(layout);
         setVisible(true);
         setSize(300,200);
@@ -51,6 +55,15 @@ public class AddBookView extends JFrame {
         add(addButton);
         layout.putConstraint(SpringLayout.NORTH,addButton,5,SpringLayout.SOUTH,quantity);
         layout.putConstraint(SpringLayout.WEST,addButton,125,SpringLayout.WEST,this);
+
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Books b = new Books(book.getText(),description.getText(),Integer.parseInt(quantity.getText()),true);
+                b.insert();
+                dispose();
+            }
+        });
     }
     public static void main(String... args){
         SwingUtilities.invokeLater(()->{

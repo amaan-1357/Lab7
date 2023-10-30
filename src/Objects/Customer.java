@@ -20,6 +20,10 @@ public class Customer {
 
     }
 
+    public Customer(String name) {
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -36,8 +40,19 @@ public class Customer {
         this.name = name;
     }
 
-    public boolean load(){
-        Hashtable<String,String> data = dao.load(id);
+    public boolean load(Integer i){
+        Hashtable<String,String> data = dao.load(i);
+        if (data == null || data.isEmpty()){
+            return false;
+        }
+
+        id = Integer.parseInt(data.get("id"));
+        name = data.get("name");
+        return true;
+    }
+
+    public boolean customLoad(String query){
+        Hashtable<String,String> data = dao.customLoad(query);
         if (data == null || data.isEmpty()){
             return false;
         }
@@ -57,6 +72,11 @@ public class Customer {
         data.put("id",id.toString());
         data.put("name",name);
         return dao.save(data);
+    }
+    public boolean insert(){
+        Hashtable<String,String> data = new Hashtable<>();
+        data.put("name",name);
+        return dao.insert(data);
     }
 
     public static ArrayList<Customer> getCustomers(){

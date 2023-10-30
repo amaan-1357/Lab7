@@ -15,8 +15,7 @@ public class Books {
 
     private static IDAO dao = new BookDao();
 
-    public Books(Integer id, String name, String description, Integer quantity, Boolean available) {
-        this.id = id;
+    public Books(String name, String description, Integer quantity, Boolean available) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -25,6 +24,14 @@ public class Books {
 
     public Books() {
 
+    }
+
+    public Books(Integer id, String name, String description, Integer quantity, Boolean available) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.quantity = quantity;
+        this.available = available;
     }
 
     public Integer getId() {
@@ -67,8 +74,22 @@ public class Books {
         this.available = available;
     }
 
-    public boolean load(){
-        Hashtable<String,String> data = dao.load(id);
+    public boolean load(Integer i){
+        Hashtable<String,String> data = dao.load(i);
+        if (data == null || data.isEmpty()){
+            return false;
+        }
+
+        id = Integer.parseInt(data.get("id"));
+        name = data.get("name");
+        description = data.get("description");
+        quantity = Integer.parseInt(data.get("quantity"));
+        available = Boolean.valueOf(data.get("Available"));
+        return true;
+    }
+
+    public boolean customLoad(String query){
+        Hashtable<String,String> data = dao.customLoad(query);
         if (data == null || data.isEmpty()){
             return false;
         }
@@ -95,11 +116,18 @@ public class Books {
         data.put("available",available.toString());
         return dao.save(data);
     }
+    public boolean insert(){
+        Hashtable<String,String> data = new Hashtable<>();
+        data.put("name",name);
+        data.put("description",description);
+        data.put("quantity",quantity.toString());
+        data.put("available",available.toString());
+        return dao.insert(data);
+    }
 
     public static ArrayList<Books> getBooks(){
         ArrayList<Hashtable<String,String>> data = dao.load();
         ArrayList<Books> books = new ArrayList<>();
-
         for(Hashtable<String,String> d : data){
             books.add(new Books(Integer.parseInt(d.get("id")),
                     d.get("name"),

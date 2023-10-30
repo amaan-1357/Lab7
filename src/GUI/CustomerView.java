@@ -1,13 +1,19 @@
 package GUI;
 
+import Objects.Books;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class CustomerView extends JFrame {
     private JLabel bookLabel = new JLabel("Books");
     private JTable bookTable;
     private JScrollPane bookPane;
+    private Books books = new Books();
     private DefaultTableModel bookModel = new DefaultTableModel();
     private JButton placeOrder = new JButton("Place Order");
     private SpringLayout layout = new SpringLayout();
@@ -16,7 +22,8 @@ public class CustomerView extends JFrame {
         setTitle("Customer view");
         setLayout(layout);
         setVisible(true);
-        setExtendedState(MAXIMIZED_BOTH);
+        setSize(500,600);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         add(bookLabel);
@@ -38,11 +45,25 @@ public class CustomerView extends JFrame {
         add(placeOrder);
         layout.putConstraint(SpringLayout.NORTH, placeOrder, 5, SpringLayout.SOUTH, bookPane);
         layout.putConstraint(SpringLayout.WEST, placeOrder, 5, SpringLayout.WEST, bookPane);
+
+        placeOrder.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(()->{
+                    PlaceOrderView pov = new PlaceOrderView();
+                });
+            }
+        });
+
+        getBooks();
+    }
+    public void getBooks(){
+        ArrayList<Books> book = books.getBooks();
+        for(Books b: book){
+            Object[] a = {b.getId(),b.getName(),b.getDescription(),b.getQuantity(),b.getAvailable()};
+            bookModel.addRow(a);
+        }
     }
 
-    public static void main(String... args) {
-        SwingUtilities.invokeLater(() -> {
-            CustomerView customerView = new CustomerView();
-        });
-    }
+
 }

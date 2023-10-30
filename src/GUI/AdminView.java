@@ -6,6 +6,9 @@ import Objects.Customer;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class AdminView extends JFrame {
     private JLabel customerLabel = new JLabel("Customers");
@@ -14,7 +17,7 @@ public class AdminView extends JFrame {
     private JTable bookTable;
     private JScrollPane customerPane;
     private JScrollPane bookPane;
-    private final Books books = new Books();
+    private Books books = new Books();
     private final Customer customers = new Customer();
     private DefaultTableModel customerModel = new DefaultTableModel();
     private DefaultTableModel bookModel = new DefaultTableModel();
@@ -26,7 +29,8 @@ public class AdminView extends JFrame {
         setTitle("Admin view");
         setLayout(layout);
         setVisible(true);
-        setExtendedState(MAXIMIZED_BOTH);
+        setSize(1000,600);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         add(customerLabel);
@@ -69,12 +73,86 @@ public class AdminView extends JFrame {
         layout.putConstraint(SpringLayout.NORTH,showOrderHistory,5,SpringLayout.SOUTH,addCustomer);
         layout.putConstraint(SpringLayout.WEST,showOrderHistory,20,SpringLayout.EAST,addCustomer);
         layout.putConstraint(SpringLayout.EAST,showOrderHistory,-20, SpringLayout.WEST,addBook);
-
-
-    }
-    public static void main(String... args){
-        SwingUtilities.invokeLater(()->{
-            AdminView adminView = new AdminView();
+        getBooks();
+        getCustomers();
+        addCustomer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(()->{
+                    AddCustomerView a = new AddCustomerView();
+                    a.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            super.windowClosing(e);
+                            System.out.println("111");
+                            DefaultTableModel tableModel = (DefaultTableModel) customerTable.getModel();
+                            tableModel.setRowCount(0);
+                            tableModel.fireTableDataChanged();
+                            getCustomers();
+                            customerModel.fireTableDataChanged();
+                        }
+                    });
+                });
+            }
         });
+        addBook.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(()->{
+                    AddBookView a = new AddBookView();
+                    a.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            super.windowClosing(e);
+                            System.out.println("111");
+                            DefaultTableModel tableModel = (DefaultTableModel) bookTable.getModel();
+                            tableModel.setRowCount(0);
+                            tableModel.fireTableDataChanged();
+                            getBooks();
+                            bookModel.fireTableDataChanged();
+                        }
+                    });
+                });
+            }
+        });
+        showOrderHistory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(()->{
+                    OrderHistoryView o = new OrderHistoryView();
+                });
+            }
+        });
+    }
+    public void getBooks(){
+        ArrayList<Books> book = books.getBooks();
+        for(Books b: book){
+            Object[] a = {b.getId(),b.getName(),b.getDescription(),b.getQuantity(),b.getAvailable()};
+            bookModel.addRow(a);
+        }
+    }
+    public void getCustomers(){
+        ArrayList<Customer> customer = customers.getCustomers();
+        for(Customer c: customer){
+            Object[] a = {c.getId(),c.getName()};
+            customerModel.addRow(a);
+        }
+    }
+
+
+    public DefaultTableModel getCustomerModel() {
+        return customerModel;
+    }
+
+    public DefaultTableModel getBookModel() {
+        return bookModel;
+    }
+
+    public void setCustomerModel(DefaultTableModel customerModel) {
+        this.customerModel = customerModel;
+    }
+
+    public void setBookModel(DefaultTableModel bookModel) {
+        this.bookModel = bookModel;
     }
 }

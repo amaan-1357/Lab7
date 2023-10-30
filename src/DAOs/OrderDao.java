@@ -21,6 +21,23 @@ public class OrderDao implements IDAO{
         return count > 0;
     }
 
+    @Override
+    public boolean insert(Hashtable<String, String> data) {
+        int count;
+        try{
+            Connection conn = getConnection();
+            PreparedStatement stmt = insertStatement(conn,data);
+            count = stmt.executeUpdate();
+            if (count == 0){
+                stmt = insertStatement(conn,data);
+                count = stmt.executeUpdate();
+            }
+        } catch(SQLException ex){
+            return false;
+        }
+        return count > 0;
+    }
+
 
     @Override
     public boolean delete(Integer id) {
@@ -54,6 +71,11 @@ public class OrderDao implements IDAO{
     }
 
     @Override
+    public ArrayList<Hashtable<String, String>> loadMultiple(Integer id) {
+        return null;
+    }
+
+    @Override
     public ArrayList<Hashtable<String, String>> load() {
         ArrayList<Hashtable<String,String>> data = new ArrayList<>();
 
@@ -76,22 +98,40 @@ public class OrderDao implements IDAO{
         return data;
     }
 
+    @Override
+    public Hashtable<String, String> customLoad(String query) {
+        Hashtable<String,String> data = new Hashtable<>();
+
+        try {
+            Connection conn = getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                data.put("id", rs.getString("id"));
+                data.put("customerID", rs.getString("customerID"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getErrorCode());
+        }
+
+        return data;
+    }
+
     private PreparedStatement insertStatement(Connection conn, Hashtable<String,String> data) throws SQLException {
-        String query = "insert into orders (id,customerID) values(?,?);";
-        return getPreparedStatement(conn, data, query);
+        String query = "insert into orders (customerID) values(?);";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setString(1,data.get("customerID"));
+        return stmt;
     }
 
     private PreparedStatement updateStatement(Connection conn,Hashtable<String,String> data) throws SQLException{
         String query = "update orders set customerID = ? where id = ?";
-        return getPreparedStatement(conn, data, query);
-    }
-
-    private PreparedStatement getPreparedStatement(Connection conn, Hashtable<String, String> data, String query) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1,data.get("id"));
         stmt.setString(2,data.get("customerID"));
         return stmt;
     }
+
 
     private PreparedStatement selectSingleStatement(Connection conn,Integer id) throws SQLException{
         String query = "select id,customerID from orders where id = ?";

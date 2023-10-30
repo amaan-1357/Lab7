@@ -1,6 +1,12 @@
 package GUI;
 
+import Objects.Books;
+import Objects.Customer;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class AddCustomerView extends JFrame {
     private JLabel name = new JLabel("Name: ");
@@ -26,11 +32,14 @@ public class AddCustomerView extends JFrame {
         add(addButton);
         layout.putConstraint(SpringLayout.NORTH,addButton,5,SpringLayout.SOUTH,this);
         layout.putConstraint(SpringLayout.WEST,addButton,125,SpringLayout.WEST,this);
-    }
 
-    public static void main(String... args){
-        SwingUtilities.invokeLater(()->{
-            AddCustomerView a = new AddCustomerView();
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Customer c = new Customer(customer.getText());
+                c.insert();
+                dispose();
+            }
         });
     }
 }

@@ -16,6 +16,13 @@ public class Order {
         this.customerID = customerID;
     }
 
+    public Order() {
+    }
+
+    public Order(Integer customerID) {
+        this.customerID = customerID;
+    }
+
     public Integer getID() {
         return id;
     }
@@ -42,6 +49,17 @@ public class Order {
         return true;
     }
 
+    public boolean customLoad(String query){
+        Hashtable<String,String> data = dao.customLoad(query);
+        if (data == null || data.isEmpty()){
+            return false;
+        }
+
+        id = Integer.parseInt(data.get("id"));
+        customerID = Integer.parseInt(data.get("customerID"));
+        return true;
+    }
+
     public boolean delete(){
         return dao.delete(id);
     }
@@ -52,6 +70,11 @@ public class Order {
         data.put("id",id.toString());
         data.put("customerID",customerID.toString());
         return dao.save(data);
+    }
+    public boolean insert(){
+        Hashtable<String,String> data = new Hashtable<>();
+        data.put("customerID",customerID.toString());
+        return dao.insert(data);
     }
 
     public static ArrayList<Order> getOrders(){
